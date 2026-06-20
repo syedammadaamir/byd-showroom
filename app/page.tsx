@@ -3,7 +3,8 @@
 import { motion, AnimatePresence, useScroll, useSpring } from "framer-motion";
 import { useState, useEffect } from "react";
 
-type CarColor = { name: string; hex: string; file: string };
+// ===== TYPES =====
+type CarColor = { name: string; hex: string; file: string; ext?: string };
 type Car = {
   id: number;
   name: string;
@@ -22,6 +23,12 @@ type Car = {
   colors: CarColor[];
 };
 
+// ===== HELPER — build image path with correct extension =====
+function imgPath(folder: string, color: CarColor) {
+  return `/Cars/${folder}/${color.file}.${color.ext || "png"}`;
+}
+
+// ===== SCROLL PROGRESS =====
 function ScrollBar() {
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30 });
@@ -37,18 +44,16 @@ function ScrollBar() {
   );
 }
 
+// ===== NAVBAR =====
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 60);
     window.addEventListener("scroll", fn);
     return () => window.removeEventListener("scroll", fn);
   }, []);
-
   const links = ["Models", "Technology", "Showrooms", "Contact"];
-
   return (
     <motion.nav
       initial={{ y: -80, opacity: 0 }}
@@ -138,27 +143,25 @@ function Navbar() {
             }}
           >
             {links.map((link) => (
-              <motion.a
+              <a
                 key={link}
                 href={`#${link.toLowerCase()}`}
                 onClick={() => setMenuOpen(false)}
-                whileHover={{ x: 6, color: "#06b6d4" }}
-                className="text-gray-300 text-sm font-medium tracking-widest uppercase py-3 border-b border-white/5 block"
+                className="text-gray-3d0 text-sm font-medium tracking-widest uppercase py-3 border-b border-white/5"
               >
                 {link}
-              </motion.a>
+              </a>
             ))}
-            <motion.a
+            <a
               href="#contact"
               onClick={() => setMenuOpen(false)}
-              whileHover={{ scale: 1.02 }}
-              className="mt-3 px-6 py-3 rounded-full text-white text-sm font-bold text-center block"
+              className="mt-3 px-6 py-3 rounded-full text-white text-sm font-bold text-center"
               style={{
                 background: "linear-gradient(135deg, #06b6d4, #a78bfa)",
               }}
             >
               Book Test Drive
-            </motion.a>
+            </a>
           </motion.div>
         )}
       </AnimatePresence>
@@ -166,6 +169,7 @@ function Navbar() {
   );
 }
 
+// ===== HERO =====
 function Hero() {
   return (
     <section className="min-h-screen relative flex items-center overflow-hidden py-24 md:py-0">
@@ -238,7 +242,7 @@ function Hero() {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="text-gray-300 text-sm md:text-lg mb-8 md:mb-10 leading-relaxed max-w-lg"
         >
-          World&apos;s #1 electric vehicle manufacturer. Cutting-edge technology
+          World's #1 electric vehicle manufacturer. Cutting-edge technology
           meets breathtaking design.
         </motion.p>
 
@@ -314,6 +318,7 @@ function Hero() {
   );
 }
 
+// ===== OCEAN SERIES (14 cars) =====
 const oceanCars: Car[] = [
   {
     id: 1,
@@ -383,6 +388,12 @@ const oceanCars: Car[] = [
       { name: "Time Grey", hex: "#6b7280", file: "TimeGray" },
       { name: "Delos Grey", hex: "#4b5563", file: "DelosGray" },
       { name: "Snow White", hex: "#f8fafc", file: "SnowWhite" },
+      {
+        name: "Boundless Sea Blue",
+        hex: "#0ea5e9",
+        file: "BoundlessSeaBlue",
+        ext: "jpeg",
+      },
       { name: "Quartz Black", hex: "#1a1a2e", file: "QuartzBlack" },
     ],
   },
@@ -670,6 +681,7 @@ const oceanCars: Car[] = [
   },
 ];
 
+// ===== DYNASTY SERIES (14 cars) =====
 const dynastyCars: Car[] = [
   {
     id: 101,
@@ -805,6 +817,7 @@ const dynastyCars: Car[] = [
       { name: "Cosmos Black", hex: "#1a1a2e", file: "CosmosBlack" },
       { name: "Qinghai Lake Blue", hex: "#0ea5e9", file: "QinghaiLakeBlue" },
       { name: "Emerald Green", hex: "#10b981", file: "EmeraldGreen" },
+      { name: "Time Grey", hex: "#6b7280", file: "TimeGrey", ext: "jpeg" },
     ],
   },
   {
@@ -986,6 +999,7 @@ const dynastyCars: Car[] = [
   },
 ];
 
+// ===== LUXURY & SPECIALTY (9 cars) =====
 const luxuryCars: Car[] = [
   {
     id: 201,
@@ -1075,7 +1089,12 @@ const luxuryCars: Car[] = [
     accent: "#f87171",
     desc: "A powerful luxury hybrid SUV with 6-seat configuration and commanding road presence.",
     colors: [
-      { name: "Whales Sea Blue", hex: "#0c4a6e", file: "WhalesSeaBlue" },
+      {
+        name: "Whales Sea Blue",
+        hex: "#0c4a6e",
+        file: "WhalesSeaBlue",
+        ext: "jpeg",
+      },
       { name: "Midnight Black", hex: "#0a0a1a", file: "MidnightBlack" },
       { name: "Frost White", hex: "#f0f9ff", file: "FrostWhite" },
       { name: "Harbour Gold", hex: "#d4af37", file: "HarbourGold" },
@@ -1219,6 +1238,7 @@ const categories = [
 
 const allCars = [...oceanCars, ...dynastyCars, ...luxuryCars];
 
+// ===== MODELS SECTION =====
 function Models() {
   const [activeCategory, setActiveCategory] = useState(0);
   const [selectedCar, setSelectedCar] = useState(0);
@@ -1264,6 +1284,7 @@ function Models() {
         </h2>
       </motion.div>
 
+      {/* Category Tabs */}
       <div className="flex flex-wrap justify-center gap-2 md:gap-4 mb-8 md:mb-10 px-2">
         {categories.map((cat, i) => (
           <motion.button
@@ -1286,6 +1307,7 @@ function Models() {
         ))}
       </div>
 
+      {/* Car Selection Buttons */}
       <div className="flex flex-wrap justify-center gap-2 md:gap-3 mb-8 md:mb-14 max-w-5xl mx-auto px-2">
         {carList.map((c, i) => (
           <motion.button
@@ -1309,6 +1331,7 @@ function Models() {
         ))}
       </div>
 
+      {/* Car Display */}
       <AnimatePresence mode="wait">
         <motion.div
           key={`${activeCategory}-${selectedCar}`}
@@ -1322,6 +1345,7 @@ function Models() {
             className="grid grid-cols-1 md:grid-cols-2 gap-0 rounded-2xl md:rounded-3xl overflow-hidden mb-8"
             style={{ border: `1px solid ${currentCar.accent}33` }}
           >
+            {/* Car Image, full view */}
             <div
               className="relative overflow-hidden flex items-center justify-center"
               style={{
@@ -1332,7 +1356,7 @@ function Models() {
               <AnimatePresence mode="popLayout" initial={false}>
                 <motion.img
                   key={selectedColor}
-                  src={`/Cars/${currentCar.folder}/${currentColor.file}.png`}
+                  src={imgPath(currentCar.folder, currentColor)}
                   alt={`${currentCar.name} ${currentColor.name}`}
                   className="w-full h-full object-contain p-4 md:p-8 absolute inset-0"
                   initial={{ x: 300, opacity: 0 }}
@@ -1360,6 +1384,7 @@ function Models() {
               </div>
             </div>
 
+            {/* Car Details */}
             <div
               className="p-6 md:p-10 flex flex-col justify-between"
               style={{ background: "rgba(10,15,35,0.95)" }}
@@ -1470,6 +1495,7 @@ function Models() {
   );
 }
 
+// ===== TECHNOLOGY =====
 function Technology() {
   const features = [
     {
@@ -1572,6 +1598,7 @@ function Technology() {
   );
 }
 
+// ===== SHOWROOMS =====
 function Showrooms() {
   const locations = [
     {
@@ -1640,7 +1667,7 @@ function Showrooms() {
               key={loc.city}
               onClick={() => setSelected(i)}
               whileHover={{ scale: 1.02, x: 4 }}
-              className="p-4 md:p-5 rounded-xl md:rounded-2xl text-left transition-all w-full"
+              className="p-4 md:p-5 rounded-xl md:rounded-2xl text-left transition-all"
               style={{
                 background:
                   selected === i
@@ -1689,7 +1716,6 @@ function Showrooms() {
             src={`https://maps.google.com/maps?q=${locations[selected].query}&output=embed`}
             allowFullScreen
             loading="lazy"
-            title={`BYD Showroom ${locations[selected].city}`}
           />
         </motion.div>
       </div>
@@ -1697,6 +1723,7 @@ function Showrooms() {
   );
 }
 
+// ===== CONTACT =====
 function Contact() {
   return (
     <section
@@ -1835,6 +1862,7 @@ function Contact() {
   );
 }
 
+// ===== FOOTER =====
 function Footer() {
   return (
     <footer
@@ -1923,6 +1951,7 @@ function Footer() {
   );
 }
 
+// ===== MAIN =====
 export default function Home() {
   return (
     <main className="bg-[#0a0f23] text-white overflow-x-hidden">
